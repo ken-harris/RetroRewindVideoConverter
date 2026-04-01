@@ -9,6 +9,8 @@ import json
 import shutil
 import sys
 
+version_number = "1.1.0 - 04/01/2026"
+
 if getattr(sys, 'frozen', False):
     _base_dir = os.path.dirname(sys.executable)
 else:
@@ -227,8 +229,8 @@ def copy_selected_movie():
     selected_filename = movie_listbox.get(selection[0])
     source_path = os.path.join(movie_var.get().strip(), selected_filename)
 
-    dest_dir = os.path.join(install_dir, "RetroRewind", "Content", "Movies", "VHS", "Public")
-    dest_path = os.path.join(dest_dir, "RR_Channel_Public.mp4")
+    dest_dir = os.path.join(install_dir, "RetroRewind", "Content", "Movies", "VHS", location_var.get())
+    dest_path = os.path.join(dest_dir, f"RR_Channel_{location_var.get()}.mp4")
 
     if not os.path.isfile(source_path):
         messagebox.showerror("File Not Found", f"Source file does not exist:\n{source_path}")
@@ -237,6 +239,12 @@ def copy_selected_movie():
     os.makedirs(dest_dir, exist_ok=True)
     shutil.copy2(source_path, dest_path)
     messagebox.showinfo("Done", f"'{selected_filename}' copied as:\n{dest_path}")
+
+def vhs_location_changed(*_):
+    if location_var.get() and movie_listbox.size() > 0:
+        set_video_btn.config(state=tk.NORMAL)
+    else:
+        set_video_btn.config(state=tk.DISABLED)
 
 # --- UI Setup ---
 root = tk.Tk()
@@ -327,7 +335,7 @@ tk.Label(root, text="Set Movie:", font=("Segoe UI", 12)).grid(
 )
 
 row += 1
-movie_listbox = tk.Listbox(root, width=60, height=10)
+movie_listbox = tk.Listbox(root, width=60, height=10, exportselection=False)
 movie_listbox.grid(row=row, column=0, columnspan=2, padx=(10, 0), pady=5, sticky="ew")
 scrollbar = ttk.Scrollbar(root, orient="vertical", command=movie_listbox.yview)
 scrollbar.grid(row=row, column=2, padx=(0, 10), pady=5, sticky="ns")
@@ -336,13 +344,20 @@ movie_listbox.config(yscrollcommand=scrollbar.set)
 refresh_movie_list()
 
 row += 1
+vhs_locations = ["Action", "Comedy", "Horror", "SciFi", "Public", "Adult", "Drama", "Fantasy", "Kid", "Police", "Romance"]
+location_var = tk.StringVar()
+cb = ttk.Combobox(root, textvariable=location_var, values=vhs_locations, state="readonly")
+cb.grid(row=row, column=0, columnspan=3, sticky="ew", **pad)
 # Set Video button
+row += 1
 set_video_btn = tk.Button(
     root, text="Set Video", command=copy_selected_movie,
     font=("Segoe UI", 10, "bold"), bg="#2d7dd2", fg="white",
-    relief="flat", padx=12, pady=6
+    relief="flat", padx=12, pady=6, state=tk.DISABLED
 )
 set_video_btn.grid(row=row, column=0, columnspan=3, pady=12)
+location_var.trace_add("write", vhs_location_changed)
+cb.set("Select Install VHS Folder...")
 
 row += 1
 separator = ttk.Separator(root, orient='horizontal')
@@ -361,4 +376,7 @@ tk.Label(root, textvariable=status_var, font=("Segoe UI", 9), fg="gray").grid(
     row=row, column=0, columnspan=3, pady=(0, 12)
 )
 
+row += 1
+version_label = tk.Label(root, text=f"Version {version_number}", font=("Segoe UI", 8), fg="gray")
+version_label.grid(row=row, column=0, columnspan=3, pady=(0, 10))
 root.mainloop()

@@ -42,15 +42,21 @@ The output video will be scaled and padded to exactly 512x512, encoded as H.264 
 Once you have converted movies in your Converted Movies Location, they will appear in the **Set Movie** list.
 
 1. Select a movie from the list.
-2. Click **Set Video**.
+2. Use the **Select Install VHS Folder** dropdown to choose which VHS category to deploy to (e.g. Action, Comedy, Horror, etc.).
+3. Click **Set Video**.
 
 The selected file will be copied to:
 
 ```
-<Retro Rewind Install Location>\RetroRewind\Content\Movies\VHS\Public\RR_Channel_Public.mp4
+<Retro Rewind Install Location>\RetroRewind\Content\Movies\VHS\<Category>\RR_Channel_<Category>.mp4
 ```
 
 Any existing file at that path will be replaced.
+
+## Changelog
+
+### 1.1.0 (04/01/2026)
+- Added VHS folder selection when deploying a movie — choose from any available category (Action, Comedy, Horror, etc.) instead of always deploying to Public.
 
 ## Output Format
 
